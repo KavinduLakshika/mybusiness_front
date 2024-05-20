@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import 'bootswatch/dist/darkly/bootstrap.min.css';
+import 'bootswatch/dist/flatly/bootstrap.min.css';
 import './App.css';
 import Home from './pages/Home';
 import Login from "./pages/auth/Login";
