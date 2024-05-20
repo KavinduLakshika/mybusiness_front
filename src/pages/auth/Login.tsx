@@ -9,7 +9,7 @@ import GoogleSignIn from "../../components/GoogleSignIn.tsx";
 import config from "../../config.ts";
 
 interface LoginProps {
-    onLogin: (name: string, email: string, token: string, user_status: string, user_type: string, profile_completed: boolean) => void;
+    onLogin: (name: string, email: string, token: string, user_status: string, user_type: string, profile_completed: boolean) => void,
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {

@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios';
+import config from "../../../config";
 
 const PassOtp = () => {
+    const base_url = config.BASE_URL;
+    const navigate = useNavigate();
+
     const [seconds, setSeconds] = useState<number>(30);
     const [isRunning, setIsRunning] = useState<boolean>(true);
+    const [formData, setFormData] = useState({ otp: "" });
+    const [errors, setErrors] = useState({ otp: "" });
+    const [processing, setProcessing] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertType, setAlertType] = useState("");
+    const [message, setMessage] = useState("");
+    const email = localStorage.getItem('recovery_email');
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout | null = null;
@@ -24,8 +36,84 @@ const PassOtp = () => {
         };
     }, [isRunning, seconds]);
 
-    const resendOtp = () => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [id]: value,
+        }));
+    };
+
+    const validate = () => {
+        let tempErrors = { otp: "" };
+        let isValid = true;
+
+        if (!formData.otp) {
+            tempErrors.otp = "OTP is required";
+            isValid = false;
+        }
+
+        setErrors(tempErrors);
+        return isValid;
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (validate()) {
+            setProcessing(true);
+
+            const postData = {
+                email: email,
+                otp: formData.otp
+            }
+
+            try {
+                const response = await axios.post(base_url + "/verify_recovery_otp", postData);
+
+                if (response.data.message_type === "success") {
+                    navigate("/reset_pass");
+                } else {
+                    setMessage(response.data.message);
+                    setAlertType("alert alert-danger");
+                    setShowAlert(true);
+                }
+            } catch (error) {
+                setMessage("Error submitting form:" + error);
+                setAlertType("alert alert-danger");
+                setShowAlert(true);
+            } finally {
+                setProcessing(false);
+            }
+        } else {
+            console.log("Please correct the errors in the form.");
+        }
+    }
+
+    const resendOtp = async () => {
         setIsRunning(true);
+
+        const postData = {
+            email: email
+        }
+
+        try {
+            const response = await axios.post(base_url + "/resend_recovery_otp", postData);
+
+            if (response.data.message_type === "success") {
+                setMessage(response.data.message);
+                setAlertType("alert alert-success");
+                setShowAlert(true);
+            } else {
+                setMessage(response.data.message);
+                setAlertType("alert alert-danger");
+                setShowAlert(true);
+            }
+        } catch (error) {
+            setMessage("Error submitting form:" + error);
+            setAlertType("alert alert-danger");
+            setShowAlert(true);
+        }
     }
 
     return (
@@ -39,24 +127,41 @@ const PassOtp = () => {
                             </div>
                         </div>
 
+                        {showAlert ?
+                            <div className="row mt-2">
+                                <div className="col-md-12">
+                                    <div className={alertType}>
+                                        {message}
+                                    </div>
+                                </div>
+                            </div> :
+                            null
+                        }
+
                         <div className="row mt-3">
                             <div className="col-md-12">
                                 <h6 className="text-center">Check your email and enter the OTP we've sent you.</h6>
                             </div>
                         </div>
 
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="row mt-3">
                                 <div className="col-md-12">
-                                    <input className="form-control" type="number" name="otp" id="otp" placeholder="Enter OTP" />
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        name="otp"
+                                        id="otp"
+                                        placeholder="Enter OTP"
+                                        onChange={handleChange}
+                                    />
+                                    {errors.otp && <small className="text-danger">{errors.otp}</small>}
                                 </div>
                             </div>
 
                             <div className="row mt-3">
                                 <div className="col-md-12">
-                                    <Link to="/reset_pass">
-                                        <button type="button" className="btn btn-primary w-100">Submit</button>
-                                    </Link>
+                                    <button type="submit" className="btn btn-primary w-100">{processing ? "Submitting..." : "Submit"}</button>
                                 </div>
                             </div>
                         </form>
