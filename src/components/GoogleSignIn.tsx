@@ -3,19 +3,14 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../config/Firebase.js";
 
-const GoogleSignIn = () => {
-    const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            const result = await signInWithPopup(auth, provider);
-            // Handle successful sign-in
-            const user = result.user;
-            console.log('User signed in:', user);
-        } catch (error) {
-            console.error('Error signing in with Google:', error);
-            // Handle errors
-        }
-    };
+interface GoogleSignInProps {
+    signIn: () => void;
+}
+
+const GoogleSignIn: React.FC<GoogleSignInProps> = ({ signIn }) => {
+    const handleGoogleSignIn = () => {
+        signIn();
+    }
 
     return (
         <>

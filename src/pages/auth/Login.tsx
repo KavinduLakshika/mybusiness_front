@@ -2,15 +2,29 @@ import { Link } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import axios from 'axios';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../config/Firebase.js";
 import GoogleSignIn from "../../components/GoogleSignIn.tsx";
+import config from "../../config.ts";
 
-const Login = () => {
+interface LoginProps {
+    onLogin: (name: string, email: string, token: string, user_status: string, user_type: string, profile_completed: boolean) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
+    const base_url = config.BASE_URL;
+
     const [obscure, setObscure] = useState(true);
     const obscureIcon = obscure ? faEye : faEyeSlash;
     const inputType = obscure ? "password" : "text";
     const [formData, setFormData] = useState({ email: "", password: "", remember: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
     const handleObscure = () => setObscure(!obscure);
+    const [processing, setProcessing] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertType, setAlertType] = useState("");
+    const [message, setMessage] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -40,14 +54,76 @@ const Login = () => {
         return isValid;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validate()) {
-            console.log(formData);
-            console.log("Signup successful!");
-            // Proceed with form submission (e.g., API call)
+            setProcessing(true);
+
+            const postData = {
+                email: formData.email,
+                password: formData.password
+            }
+
+            try {
+                const response = await axios.post(base_url + "/login", postData);
+                const responseType = response.data.message_type;
+
+                if (responseType === "error") {
+                    setMessage(response.data.message);
+                    setAlertType("alert alert-danger");
+                    setShowAlert(true);
+                } else {
+                    // setMessage(response.data.message);
+                    // setAlertType("alert alert-" + responseType);
+                    // setShowAlert(true);
+                    onLogin(response.data.name, response.data.email, response.data.token, response.data.user_status, response.data.user_type, response.data.profile_completed);
+                }
+
+            } catch (error) {
+                setMessage("Error submitting form:" + error);
+                setAlertType("alert alert-danger");
+                setShowAlert(true);
+            } finally {
+                setProcessing(false);
+            }
         } else {
             console.log("Please correct the errors in the form.");
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // Handle successful sign-in
+            const user = result.user;
+
+            const postData = {
+                name: user.displayName,
+                email: user.email,
+                social: "Google",
+                image: user.photoURL
+            }
+
+            const response = await axios.post(base_url + "/social_sign", postData);
+            const responseType = response.data.message_type;
+
+            if (responseType === "error") {
+                setMessage(response.data.message);
+                setAlertType("alert alert-danger");
+                setShowAlert(true);
+            } else {
+                // setMessage(response.data.message);
+                // setAlertType("alert alert-" + responseType);
+                // setShowAlert(true);
+                onLogin(response.data.name, response.data.email, response.data.token, response.data.user_status, response.data.user_type, response.data.profile_completed);
+            }
+        } catch (error) {
+            console.error('Error signing in with Google:', error);
+            // Handle errors
+            setMessage("Error signing in with Google:" + error);
+            setAlertType("alert alert-danger");
+            setShowAlert(true);
         }
     };
 
@@ -61,6 +137,17 @@ const Login = () => {
                                 <h3 className="text-center"><Link to="/">My Business</Link></h3>
                             </div>
                         </div>
+
+                        {showAlert ?
+                            <div className="row mt-2">
+                                <div className="col-md-12">
+                                    <div className={alertType}>
+                                        {message}
+                                    </div>
+                                </div>
+                            </div> :
+                            null
+                        }
 
                         <form onSubmit={handleSubmit}>
                             <div className="row mt-3">
@@ -115,7 +202,7 @@ const Login = () => {
 
                             <div className="row mt-3">
                                 <div className="col-md-12">
-                                    <button type="submit" className="btn btn-primary w-100">Login</button>
+                                    <button type="submit" className="btn btn-primary w-100">{processing ? "Logging in..." : "Login"}</button>
                                 </div>
                             </div>
                         </form>
@@ -140,7 +227,7 @@ const Login = () => {
 
                         <div className="row mt-3 justify-content-center">
                             <div className="col-md-2">
-                                <GoogleSignIn />
+                                <GoogleSignIn signIn={handleGoogleSignIn} />
                             </div>
                         </div>
                     </div>

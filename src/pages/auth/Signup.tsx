@@ -3,11 +3,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../config/Firebase.js";
 import GoogleSignIn from "../../components/GoogleSignIn";
 import config from "../../config";
 
-const Signup = () => {
+interface SignupProps {
+    onLogin: (name: string, email: string, token: string, user_status: string, user_type: string, profile_completed: boolean) => void;
+};
+
+const Signup: React.FC<SignupProps> = ({ onLogin }) => {
     const base_url = config.BASE_URL;
 
     const [obscure, setObscure] = useState(true);
@@ -100,22 +105,26 @@ const Signup = () => {
         if (validate()) {
             setProcessing(true);
 
-            // Hash the password using bcrypt
-            const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = bcrypt.hashSync(formData.password, salt);
-
             const postData = {
                 name: formData.name,
                 email: formData.email,
-                password: hashedPassword
+                password: formData.password
             }
 
             try {
                 const response = await axios.post(base_url + "/register", postData);
                 const responseType = response.data.message_type;
-                setMessage(response.data.message);
-                responseType === "error" ? setAlertType("alert alert-danger") : setAlertType("alert alert-" + responseType);
-                setShowAlert(true);
+
+                if (responseType === "error") {
+                    setMessage(response.data.message);
+                    setAlertType("alert alert-danger");
+                    setShowAlert(true);
+                } else {
+                    // setMessage(response.data.message);
+                    // setAlertType("alert alert-" + responseType);
+                    // setShowAlert(true);
+                    onLogin(response.data.name, response.data.email, response.data.token, response.data.user_status, response.data.user_type, response.data.profile_completed);
+                }
             } catch (error) {
                 setMessage("Error submitting form:" + error);
                 setAlertType("alert alert-danger");
@@ -123,6 +132,42 @@ const Signup = () => {
             } finally {
                 setProcessing(false);
             }
+        }
+    };
+
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const result = await signInWithPopup(auth, provider);
+            // Handle successful sign-in
+            const user = result.user;
+
+            const postData = {
+                name: user.displayName,
+                email: user.email,
+                social: "Google",
+                image: user.photoURL
+            }
+
+            const response = await axios.post(base_url + "/social_sign", postData);
+            const responseType = response.data.message_type;
+
+            if (responseType === "error") {
+                setMessage(response.data.message);
+                setAlertType("alert alert-danger");
+                setShowAlert(true);
+            } else {
+                // setMessage(response.data.message);
+                // setAlertType("alert alert-" + responseType);
+                // setShowAlert(true);
+                onLogin(response.data.name, response.data.email, response.data.token, response.data.user_status, response.data.user_type, response.data.profile_completed);
+            }
+        } catch (error) {
+            console.error('Error signing in with Google:', error);
+            // Handle errors
+            setMessage("Error signing in with Google:" + error);
+            setAlertType("alert alert-danger");
+            setShowAlert(true);
         }
     };
 
@@ -258,7 +303,7 @@ const Signup = () => {
 
                         <div className="row mt-3 justify-content-center">
                             <div className="col-md-2">
-                                <GoogleSignIn />
+                                <GoogleSignIn signIn={handleGoogleSignIn} />
                             </div>
                         </div>
                     </div>
