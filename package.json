@@ -29,6 +29,7 @@
     "lineicons-react": "^1.0.5",
     "md5": "^2.3.0",
     "react": "^18.2.0",
+    "react-bootstrap-typeahead": "^6.3.2",
     "react-chartjs-2": "^5.2.0",
     "react-data-table-component": "^7.6.2",
     "react-dom": "^18.2.0",

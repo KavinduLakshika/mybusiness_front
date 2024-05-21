@@ -7,8 +7,8 @@ interface Props {
     weekly: string;
     daily: string;
     key_str: string;
-    uData: never[];
-    xLabels: never[];
+    uData: any;
+    xLabels: any;
     chart_color: string;
     // amount: string;
     // prc: string;

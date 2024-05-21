@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import axios from 'axios';
 import config from "../../../config";
 
@@ -120,7 +120,7 @@ const ReqOtp = () => {
 
                             <div className="row mt-3">
                                 <div className="col-md-12">
-                                    <button type="submit" className="btn btn-primary w-100">Submit</button>
+                                    <button type="submit" className="btn btn-primary w-100">{processing ? "Submitting..." : "Submit"}</button>
                                 </div>
                             </div>
                         </form>

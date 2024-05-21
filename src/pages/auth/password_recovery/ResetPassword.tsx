@@ -1,13 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faEye, faEyeSlash, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from 'axios';
 import config from "../../../config";
 
 const ResetPassword = () => {
     const base_url = config.BASE_URL;
-    const navigate = useNavigate();
 
     const [obscure, setObscure] = useState(true);
     const [login, setLogin] = useState(false);
@@ -203,7 +202,7 @@ const ResetPassword = () => {
 
                             <div className="row mt-3">
                                 <div className="col-md-12">
-                                    <button type="submit" className="btn btn-primary w-100">Submit</button>
+                                    <button type="submit" className="btn btn-primary w-100">{processing ? "Submitting..." : "Submit"}</button>
                                 </div>
                             </div>
                         </form>

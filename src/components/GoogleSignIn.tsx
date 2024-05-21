@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../config/Firebase.js";
 
 interface GoogleSignInProps {
     signIn: () => void;
