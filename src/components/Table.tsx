@@ -1,4 +1,4 @@
-// import 'animate.css';
+import 'animate.css';
 import {ReactNode} from 'react';
 
 interface Props {

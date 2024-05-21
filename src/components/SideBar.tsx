@@ -1,6 +1,6 @@
 import NavBar from "./NavBar";
 import { ReactNode, useState } from 'react';
-// import 'animate.css';
+import 'animate.css';
 import { Link } from "react-router-dom";
 
 interface Props {
