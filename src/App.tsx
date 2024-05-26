@@ -14,7 +14,6 @@ import ResetPassword from "./pages/auth/password_recovery/ResetPassword";
 import { useEffect, useState } from "react";
 import Stock from "./pages/user/Stock";
 import Profile from "./pages/user/Profile";
-import Invoice from "./pages/user/Invoice";
 
 interface ProtectedRouteProps {
   element: JSX.Element;
@@ -169,10 +168,9 @@ function App() {
           <Route path="/pass_otp" element={<PassOtp />} />
           <Route path="/reset_pass" element={<ResetPassword />} />
 
-          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
-          <Route path="/stock" element={<ProtectedRoute element={<Stock />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/stock" element={<ProtectedRoute element={<Stock email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
-          <Route path="/invoice" element={<ProtectedRoute element={<Invoice />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
         </Routes>
       </BrowserRouter>
     </>

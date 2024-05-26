@@ -1,5 +1,5 @@
 import 'animate.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
     data: any,
@@ -7,15 +7,27 @@ interface Props {
 }
 
 const Table = ({ data, columns }: Props) => {
-    const [tableData] = useState(data);
-    const [tableColumns] = useState(columns);
+    const [tableData, setTableData] = useState(data);
+    const [tableColumns, setTableColumns] = useState(columns);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
+    useEffect(() => {
+        setTableData(data);
+    }, [data]);
+
+    useEffect(() => {
+        setTableColumns(columns);
+    }, [columns]);
+
+
     const filteredData = tableData.filter((tableDatum: any) => {
         const query = searchQuery.toLowerCase();
-        return tableDatum.some((item: any) => item.toString().toLowerCase().includes(query));
+        return tableDatum.some((item: any) => {
+            // Check if item is not null or undefined before converting to string and checking the query
+            return item != null && item.toString().toLowerCase().includes(query);
+        });
     });
 
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -27,11 +39,6 @@ const Table = ({ data, columns }: Props) => {
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
-
-    // const handleShowDetails = (person: number[]) => {
-    //     // setSelectedPerson(person);
-    //     // setShowModal(true);
-    // };
 
     return (
         <div className="container-fluid p-2">
@@ -52,7 +59,7 @@ const Table = ({ data, columns }: Props) => {
 
             <div className="mt-2">
                 <div className="col-md-12">
-                    <table className="table table-responsive">
+                    <table className="table table-hover table-responsive">
                         <thead>
                             <tr>
                                 {tableColumns.map((item: string, index: number) => (
@@ -66,14 +73,6 @@ const Table = ({ data, columns }: Props) => {
                                     {datum.map((item: any, colIndex: any) => (
                                         <td key={colIndex}>{item}</td>
                                     ))}
-                                    {/* <td>
-                                        <button
-                                            className="btn btn-primary"
-                                            onClick={() => handleShowDetails(datum)}
-                                        >
-                                            Show Details
-                                        </button>
-                                    </td> */}
                                 </tr>
                             ))}
                         </tbody>

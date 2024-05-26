@@ -40,14 +40,8 @@ function Profile() {
         <div id="myTabContent" className="tab-content mt-3">
           <div className={`tab-pane fade ${activeTab === 'home' ? 'show active' : ''}`} id="home" role="tabpanel">
             <div className="col-md-12 d-flex justify-content-center">
-              <div className="row mt-2">
-                <div className="col-md-12">
-                  <div className="alert alert-danger">
-                    "Error: Error connecting to the server: Axios error: Server Timeout"
-                  </div>
-                </div>
-              </div>
-              {/* <div className="col-md-5">
+              
+              <div className="col-md-5">
                 <div className="row  container-fluid">
                   <form className="border p-3">
                     <fieldset>
@@ -93,19 +87,12 @@ function Profile() {
                     </fieldset>
                   </form>
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
           <div className={`tab-pane fade ${activeTab === 'profile' ? 'show active' : ''}`} id="profile" role="tabpanel">
             <div className="col-md-12 d-flex justify-content-center">
-              <div className="row mt-2">
-                <div className="col-md-12">
-                  <div className="alert alert-danger">
-                    "Error: Error connecting to the server: Axios error: Server Timeout"
-                  </div>
-                </div>
-              </div>
-              {/* <div className="col-md-5">
+              <div className="col-md-5">
                 <div className="row  container-fluid">
                   <form className="border p-3">
                     <fieldset>
@@ -124,8 +111,8 @@ function Profile() {
                     </fieldset>
                   </form>
                 </div>
-              </div> */}
-              {/* <div className="col-md-5">
+              </div>
+              <div className="col-md-5">
                 <div className="row">
                   <form className="border p-3">
                     <fieldset>
@@ -144,7 +131,7 @@ function Profile() {
                     </fieldset>
                   </form>
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

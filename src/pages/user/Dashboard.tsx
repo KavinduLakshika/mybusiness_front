@@ -1,24 +1,26 @@
 import Card from "../../components/Card";
 import SideBar from "../../components/SideBar";
-// import Table from "../../components/Table";
+import Table from "../../components/Table";
 import { useEffect, useState } from 'react';
 import axios from "axios";
 import config from "../../config";
 
-const Dashboard = () => {
+interface Props {
+    email: string | null
+}
+
+const Dashboard = ({ email }: Props) => {
     const base_url = config.BASE_URL;
-    const email = localStorage.getItem("email");
-    const user_type = localStorage.getItem("user_type");
 
-    // const cols = [
-    //     "Col 1", "Col 2", "Col 3", "Col 4"
-    // ];
+    const cols = [
+        "Col 1", "Col 2", "Col 3", "Col 4"
+    ];
 
-    // const data = [
-    //     ["Val 1", "Val 2", "Val 3", "New Val"],
-    //     ["Val 4", "Val 5", "Val 6", "New Val"],
-    //     ["Val 7", "Val 8", "Val 9", "New Val"]
-    // ];
+    const data = [
+        ["Val 1", "Val 2", "Val 3", "New Val"],
+        ["Val 4", "Val 5", "Val 6", "New Val"],
+        ["Val 7", "Val 8", "Val 9", "New Val"]
+    ];
 
     const [reportData, setReportData] = useState({
         lifetimeSales: "0",
@@ -50,7 +52,6 @@ const Dashboard = () => {
             axios.post(base_url + '/api_get_reports', data)
                 .then(response => {
                     setReportData(response.data.message);
-                    console.log(response.data);
                 })
                 .catch(error => {
                     // Handle the error
@@ -62,7 +63,6 @@ const Dashboard = () => {
             axios.post(base_url + '/api_get_all_invoices', data)
                 .then(response => {
                     setInvoicesData(response.data.message);
-                    console.log(response.data);
                 })
                 .catch(error => {
                     // Handle the error
@@ -72,7 +72,6 @@ const Dashboard = () => {
 
         reports();
         invoices();
-        console.log(reportData);
     }, []);
 
     function formatNumber(num: number) {
@@ -101,79 +100,52 @@ const Dashboard = () => {
         return returnData;
     }
 
-    if (user_type === "user") {
-        return (
-            <SideBar>
-                <div className="container-fluid">
-                    <div className="row mt-2">
-                        <Card title="Sales"
-                            lifetime={reportData.lifetimeSales}
-                            monthly={reportData.salesMonth}
-                            weekly={reportData.salesWeek}
-                            daily={reportData.salesToday}
-                            key_str="Sales - Last 7 days"
-                            uData={chart_data(reportData.dailySales, "sales")}
-                            xLabels={chart_data(reportData.dailySales, "date")}
-                            chart_color="#e15759"
-                        />
-                        <Card title="Revenue"
-                            lifetime={formatNumber(reportData.lifetimeRevenue)}
-                            monthly={formatNumber(reportData.revenueMonth)}
-                            weekly={formatNumber(reportData.revenueWeek)}
-                            daily={formatNumber(reportData.revenueToday)}
-                            key_str="Revenue - Last 7 days"
-                            uData={chart_data(reportData.dailyRevenue, "revenue")}
-                            xLabels={chart_data(reportData.dailyRevenue, "date")}
-                            chart_color="#59a14f"
-                        />
-                        <Card title="Profits"
-                            lifetime={formatNumber(reportData.lifetimeProfit)}
-                            monthly={formatNumber(reportData.profit_month)}
-                            weekly={formatNumber(reportData.profit_week)}
-                            daily={formatNumber(reportData.profitToday)}
-                            key_str="Profits - Last 7 days"
-                            uData={chart_data(reportData.dailyProfits, "profit")}
-                            xLabels={chart_data(reportData.dailyProfits, "date")}
-                            chart_color="#4e79a7"
-                        />
-                    </div>
-
-                    <div className="row mt-4">
-                        <div className="col-md-12">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="rom mb-2">
-                                        <div className="col-md-12">
-                                            <h4>Invoices</h4>
-                                        </div>
-                                    </div>
-                                    {/* <Table columns={cols} data={data} /> */}
-                                    <div className="row mt-2">
-                                        <div className="col-md-12">
-                                            <div className="alert alert-danger">
-                                                "Error: Error connecting to the server: Axios error: Server Timeout"
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </SideBar>
-        );
-    }
-
     return (
         <SideBar>
             <div className="container-fluid">
                 <div className="row mt-2">
+                    <Card title="Sales"
+                        lifetime={reportData.lifetimeSales}
+                        monthly={reportData.salesMonth}
+                        weekly={reportData.salesWeek}
+                        daily={reportData.salesToday}
+                        key_str="Sales - Last 7 days"
+                        uData={chart_data(reportData.dailySales, "sales")}
+                        xLabels={chart_data(reportData.dailySales, "date")}
+                        chart_color="#e15759"
+                    />
+                    <Card title="Revenue"
+                        lifetime={formatNumber(reportData.lifetimeRevenue)}
+                        monthly={formatNumber(reportData.revenueMonth)}
+                        weekly={formatNumber(reportData.revenueWeek)}
+                        daily={formatNumber(reportData.revenueToday)}
+                        key_str="Revenue - Last 7 days"
+                        uData={chart_data(reportData.dailyRevenue, "revenue")}
+                        xLabels={chart_data(reportData.dailyRevenue, "date")}
+                        chart_color="#59a14f"
+                    />
+                    <Card title="Profits"
+                        lifetime={formatNumber(reportData.lifetimeProfit)}
+                        monthly={formatNumber(reportData.profit_month)}
+                        weekly={formatNumber(reportData.profit_week)}
+                        daily={formatNumber(reportData.profitToday)}
+                        key_str="Profits - Last 7 days"
+                        uData={chart_data(reportData.dailyProfits, "profit")}
+                        xLabels={chart_data(reportData.dailyProfits, "date")}
+                        chart_color="#4e79a7"
+                    />
+                </div>
+
+                <div className="row mt-4">
                     <div className="col-md-12">
-                        <div className="row mt-2">
-                            <div className="col-md-12">
-                                <div className="alert alert-danger">
-                                    "Error: Error connecting to the server: Axios error: Server Timeout"
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="rom mb-2">
+                                    <div className="col-md-12">
+                                        <h4>Invoices</h4>
+                                    </div>
                                 </div>
+                                <Table columns={cols} data={data} />
                             </div>
                         </div>
                     </div>
