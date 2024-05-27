@@ -170,7 +170,7 @@ function App() {
 
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
           <Route path="/stock" element={<ProtectedRoute element={<Stock email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
-          <Route path="/profile" element={<ProtectedRoute element={<Profile />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<Profile email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
         </Routes>
       </BrowserRouter>
     </>

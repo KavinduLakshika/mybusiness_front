@@ -4,6 +4,7 @@ import SideBar from "../../components/SideBar"
 import config from "../../config";
 import { useEffect, useState } from 'react';
 import Table from '../../components/Table';
+import EditStockModal from '../../modals/EditStockModal';
 
 interface Props {
   email: string | null
@@ -11,7 +12,11 @@ interface Props {
 
 const Stock = ({ email }: Props) => {
   const base_url = config.BASE_URL;
-  const initialFormData = {
+  const tableColumns = [
+    "Product Name", "Batch ID", "Available Quantity", "Buying Price", "Selling Price", "Man. Date", "Exp. Date", "Actions"
+  ];
+
+  const [formData, setFormData] = useState({
     prod_name: "",
     batch_id: "",
     qty: "",
@@ -19,12 +24,7 @@ const Stock = ({ email }: Props) => {
     selling_price: "",
     mfd: "",
     exp: ""
-  };
-  const tableColumns = [
-    "Product Name", "Batch ID", "Available Quantity", "Buying Price", "Selling Price", "Man. Date", "Exp. Date", "Actions"
-  ];
-
-  const [formData, setFormData] = useState(initialFormData);
+  });
   const [errors, setErrors] = useState({ prod_name: "", batch_id: "", qty: "", buying_price: "", selling_price: "" });
   const [processing, setProcessing] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
@@ -32,6 +32,8 @@ const Stock = ({ email }: Props) => {
   const [message, setMessage] = useState("");
   const [options, setOptions] = useState<string[]>([]);
   const [tableData, setTableData] = useState<any[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [updateData, setUpdateData] = useState({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -106,11 +108,14 @@ const Stock = ({ email }: Props) => {
     for (const product of data) {
       for (const batch of product.batches) {
         if (id === batch._id) {
-          console.log(batch);
+          setUpdateData(batch);
+          setModalOpen(true);
         }
       }
     }
   }
+
+  const handleModalClose = () => setModalOpen(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -154,28 +159,26 @@ const Stock = ({ email }: Props) => {
   };
 
   const handleTypeaheadChange = (selected: string | any[]) => {
-    if (selected.length > 0) {
-      setFormData({
-        ...formData,
-        prod_name: selected[0]
-      });
-    } else {
-      setFormData({
-        ...formData,
-        prod_name: ''
-      });
-    }
+    const updatedFormData = {
+      ...formData,
+      prod_name: selected.length > 0 ? selected[0] : ''
+    };
+
+    setFormData(updatedFormData);
   };
 
   const handleTypeaheadInputChange = (text: any) => {
-    setFormData({
+    const updatedFormData = {
       ...formData,
       prod_name: text
-    });
+    };
+
+    setFormData(updatedFormData);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (validate()) {
       setProcessing(true);
 
@@ -353,6 +356,7 @@ const Stock = ({ email }: Props) => {
           </div>
         </div>
       </div>
+      <EditStockModal open={modalOpen} handleClose={handleModalClose} data={updateData} email={email} updateTable={products} />
     </SideBar>
   )
 }
