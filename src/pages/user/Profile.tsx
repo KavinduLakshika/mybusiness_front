@@ -1,12 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SideBar from "../../components/SideBar";
+import UserProfileUpdateTab from "../../tabs/UserProfileUpdateTab";
+import UserPasswordUpdateTab from "../../tabs/UserPasswordUpdateTab";
+import UserUpdateBusinessTab from "../../tabs/UserUpdateBusinessTab";
+import config from "../../config";
+import axios from 'axios';
 
 interface Props {
   email: string | null
 }
 
 function Profile({ email }: Props) {
+  const base_url = config.BASE_URL;
+
   const [activeTab, setActiveTab] = useState("profile");
+  const [userData, setUserData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const postData = {
+          email: email
+        }
+
+        const response = await axios.post(base_url + "/get_user", postData);
+
+        if (response.data.message_type === "success") {
+          setUserData(response.data.message);
+          console.log(response.data.message);
+        } else {
+          console.log(response.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
   return (
     <SideBar>
       <div className="container-fluid">
@@ -67,33 +102,33 @@ function Profile({ email }: Props) {
         <div className="row mt-2">
           <div className="col-md-12">
             <div className="tab-content">
-              <div className={`tab-pane fade ${activeTab === 'profile' ? 'show active' : ''}`} id="profile" role="tabpanel">
-                <div className="row justify-content-center">
-                  <div className="col-md-3">
-                    <div className="card mt-5">
-                      <div className="card-body">
-                        <div className="row mt-2">
-                          <div className="col-md-12">
-                            <h4 className="text-center">Update User Profile</h4>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              {loading ? (
+                <div className="row mt-5">
+                  <div className="col-md-12">
+                    <h3 className="text-center">
+                      Loading.....
+                    </h3>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className={`tab-pane fade ${activeTab === 'profile' ? 'show active' : ''}`} id="profile" role="tabpanel">
+                    <UserProfileUpdateTab userData={userData} email={email} />
+                  </div>
 
-              <div className={`tab-pane fade ${activeTab === 'password' ? 'show active' : ''}`} id="password" role="tabpanel">
-                <div className="row justify-content-center">
-                  <h4>Password</h4>
-                </div>
-              </div>
+                  <div className={`tab-pane fade ${activeTab === 'password' ? 'show active' : ''}`} id="password" role="tabpanel">
+                    <div className="row justify-content-center">
+                      <UserPasswordUpdateTab email={email} />
+                    </div>
+                  </div>
 
-              <div className={`tab-pane fade ${activeTab === 'business' ? 'show active' : ''}`} id="business" role="tabpanel">
-                <div className="row justify-content-center">
-                  <h4>Business</h4>
-                </div>
-              </div>
+                  <div className={`tab-pane fade ${activeTab === 'business' ? 'show active' : ''}`} id="business" role="tabpanel">
+                    <div className="row justify-content-center">
+                      <UserUpdateBusinessTab userData={userData} email={email} />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
