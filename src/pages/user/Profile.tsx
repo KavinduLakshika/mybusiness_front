@@ -7,10 +7,11 @@ import config from "../../config";
 import axios from 'axios';
 
 interface Props {
-  email: string | null
+  email: string | null,
+  onLogout: () => void;
 }
 
-function Profile({ email }: Props) {
+function Profile({ email, onLogout }: Props) {
   const base_url = config.BASE_URL;
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -28,7 +29,6 @@ function Profile({ email }: Props) {
 
         if (response.data.message_type === "success") {
           setUserData(response.data.message);
-          console.log(response.data.message);
         } else {
           console.log(response.data.message);
         }
@@ -43,7 +43,7 @@ function Profile({ email }: Props) {
   }, []);
 
   return (
-    <SideBar>
+    <SideBar onLogout={onLogout}>
       <div className="container-fluid">
         <div className="row mt-3">
           <div className="col-md-12">

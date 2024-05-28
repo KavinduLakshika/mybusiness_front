@@ -56,7 +56,7 @@ const Card = ({title, lifetime, monthly, weekly, daily, key_str, uData, xLabels,
                     <div className="row mt-2">
                         <div className="col-md-12">
                             <LineChart
-                                height={200}
+                                height={400}
                                 series={[{
                                     data: uData,
                                     label: `${key_str}`,

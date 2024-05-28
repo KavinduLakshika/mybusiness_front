@@ -1,15 +1,22 @@
 import NavBar from "./NavBar";
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import 'animate.css';
 import { Link } from "react-router-dom";
 
 interface Props {
-    children?: ReactNode
+    children?: ReactNode,
+    onLogout: () => void;
 }
 
-function SideBar({ children }: Props) {
+function SideBar({ children, onLogout }: Props) {
     const [isExpanded, setIsExpanded] = useState(false);
-    // const navigate = useNavigate();
+    const [userType, setUserType] = useState("user");
+
+    useEffect(() => {
+        setUserType(localStorage.getItem("user_type") || "user");
+        console.log(userType);
+    }, [])
+
 
     const toggleSidebar = () => {
         console.log("clicked")
@@ -17,9 +24,7 @@ function SideBar({ children }: Props) {
     };
 
     const logout = () => {
-        localStorage.removeItem('isLoggedIn');
-        // navigate('/');
-        window.location.reload();
+        onLogout();
     }
 
     return (
@@ -33,48 +38,56 @@ function SideBar({ children }: Props) {
                         <a href="#">My Business</a>
                     </div>
                 </div>
-                <ul className="sidebar-nav">
-                    <li className="sidebar-item">
-                        <Link to="/dashboard">
-                            <a href="#" className="sidebar-link">
-                                <i className="lni lni-dashboard"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </Link>
-                    </li>
-                    <li className="sidebar-item">
-                        <Link to="/invoice">
-                            <a href="/invoice" className="sidebar-link">
-                                <i className="lni lni-book"></i>
-                                <span>Invoice</span>
-                            </a>
-                        </Link>
-                    </li>
-                    {/* <li className="sidebar-item">
-                    <Link to="/add">
-                        <a href="#" className="sidebar-link">
-                            <i className="lni lni-circle-plus"></i>
-                            <span>Add Items</span>
-                        </a>
-                    </Link>
-                </li> */}
-                    <li className="sidebar-item">
-                        <Link to="/stock">
-                            <a href="/stock" className="sidebar-link">
-                                <i className="lni lni-cart-full"></i>
-                                <span>Stock</span>
-                            </a>
-                        </Link>
-                    </li>
-                    <li className="sidebar-item">
-                        <Link to="/profile">
-                            <a href="/profile" className="sidebar-link">
-                                <i className="lni lni-cog"></i>
-                                <span>Setting</span>
-                            </a>
-                        </Link>
-                    </li>
-                </ul>
+                {userType === "admin" ?
+                    (
+                        <ul className="sidebar-nav">
+                            <li className="sidebar-item">
+                                <Link to="/admin_dashboard">
+                                    <a href="#" className="sidebar-link">
+                                        <i className="lni lni-dashboard"></i>
+                                        <span>Admin Dashboard</span>
+                                    </a>
+                                </Link>
+                            </li>
+                        </ul>
+                    ) :
+                    (
+                        <ul className="sidebar-nav">
+                            <li className="sidebar-item">
+                                <Link to="/dashboard">
+                                    <a href="#" className="sidebar-link">
+                                        <i className="lni lni-dashboard"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </Link>
+                            </li>
+                            <li className="sidebar-item">
+                                <Link to="/invoice">
+                                    <a href="/invoice" className="sidebar-link">
+                                        <i className="lni lni-book"></i>
+                                        <span>Invoice</span>
+                                    </a>
+                                </Link>
+                            </li>
+                            <li className="sidebar-item">
+                                <Link to="/stock">
+                                    <a href="/stock" className="sidebar-link">
+                                        <i className="lni lni-cart-full"></i>
+                                        <span>Stock</span>
+                                    </a>
+                                </Link>
+                            </li>
+                            <li className="sidebar-item">
+                                <Link to="/profile">
+                                    <a href="/profile" className="sidebar-link">
+                                        <i className="lni lni-cog"></i>
+                                        <span>Setting</span>
+                                    </a>
+                                </Link>
+                            </li>
+                        </ul>
+                    )
+                }
                 <div className="sidebar-footer">
                     <a href="" className="sidebar-link" onClick={logout}>
                         <i className="lni lni-exit"></i>

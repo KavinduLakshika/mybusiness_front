@@ -7,10 +7,11 @@ import Table from '../../components/Table';
 import EditStockModal from '../../modals/EditStockModal';
 
 interface Props {
-  email: string | null
+  email: string | null,
+  onLogout: () => void;
 }
 
-const Stock = ({ email }: Props) => {
+const Stock = ({ email, onLogout }: Props) => {
   const base_url = config.BASE_URL;
   const tableColumns = [
     "Product Name", "Batch ID", "Available Quantity", "Buying Price", "Selling Price", "Man. Date", "Exp. Date", "Actions"
@@ -56,7 +57,7 @@ const Stock = ({ email }: Props) => {
       if (response.data.message_type === "error") {
         setMessage(response.data.message);
         setAlertType("alert alert-danger");
-        setShowAlert(true);
+        // setShowAlert(true);
       } else {
         const productsData = response.data.message[0].products;
         addOptions(productsData);
@@ -224,7 +225,7 @@ const Stock = ({ email }: Props) => {
   }
 
   return (
-    <SideBar>
+    <SideBar onLogout={onLogout}>
       <div className="container-fluid">
         <div className="row mt-3">
           <div className="col-md-12">

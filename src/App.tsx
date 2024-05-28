@@ -14,6 +14,8 @@ import ResetPassword from "./pages/auth/password_recovery/ResetPassword";
 import { useEffect, useState } from "react";
 import Stock from "./pages/user/Stock";
 import Profile from "./pages/user/Profile";
+import Invoice from "./pages/user/Invoice";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 interface ProtectedRouteProps {
   element: JSX.Element;
@@ -48,16 +50,16 @@ const ProfileIncompleteRoute: React.FC<ProfileIncompleteProps> = ({ element, tok
   return token && user_status === "active" && !profile_completed ? element : <Navigate to="/login" replace />;
 };
 
-// interface AdminRouteProps {
-//   element: JSX.Element;
-//   token: string | null;
-//   user_status: string | null;
-//   user_type: string | null;
-// }
+interface AdminRouteProps {
+  element: JSX.Element;
+  token: string | null;
+  user_status: string | null;
+  user_type: string | null;
+}
 
-// const AdminRoute: React.FC<AdminRouteProps> = ({ element, token, user_status, user_type }) => {
-//   return token && user_status === "active" && user_type === "admin" ? element : <Navigate to="/login" replace />;
-// };
+const AdminRoute: React.FC<AdminRouteProps> = ({ element, token, user_status, user_type }) => {
+  return token && user_status === "active" && user_type === "admin" ? element : <Navigate to="/login" replace />;
+};
 
 function App() {
   const [name, setName] = useState<string | null>(null);
@@ -68,14 +70,14 @@ function App() {
   const [profileCompleted, setProfileCompleted] = useState<boolean>(false);
 
   useEffect(() => {
-    // Retrieve the token from localStorage when the component mounts
     const storedName = localStorage.getItem('name');
     const storedEmail = localStorage.getItem('email');
     const storedToken = localStorage.getItem('token');
     const storedStatus = localStorage.getItem('user_status');
     const storedType = localStorage.getItem('user_type');
     const storedProfile = localStorage.getItem('profile_completed');
-    name;
+
+    console.log(name);
 
     if (storedEmail) {
       setEmail(storedEmail);
@@ -127,31 +129,33 @@ function App() {
     setProfileCompleted(profile_completed);
   }
 
-  // const handleLogout = () => {
-  //   // Remove the token from localStorage and update the state
-  //   localStorage.removeItem('name');
-  //   localStorage.removeItem('email');
-  //   localStorage.removeItem('token');
-  //   localStorage.removeItem('user_status');
-  //   localStorage.removeItem('user_type');
-  //   localStorage.removeItem('profile_completed');
-  //   setName(null);
-  //   setEmail(null);
-  //   setToken(null);
-  //   setUserStatus(null);
-  //   setProfileCompleted(false);
-  // };
+  const handleLogout = () => {
+    // Remove the token from localStorage and update the state
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_status');
+    localStorage.removeItem('user_type');
+    localStorage.removeItem('profile_completed');
+    setName(null);
+    setEmail(null);
+    setToken(null);
+    setUserStatus(null);
+    setProfileCompleted(false);
+  };
 
   const navigateTo = () => {
-    if (userStatus === "unverified") {
-      return("/reg_otp");
+    if (userType === "user") {
+      if (userStatus === "unverified") {
+        return ("/reg_otp");
+      } else if (!profileCompleted) {
+        return ("/reg_shop");
+      } else {
+        return ("/dashboard");
+      }
+    } else {
+      return ("/admin_dashboard");
     }
-
-    if (!profileCompleted) {
-      return("/reg_shop");
-    }
-
-    return("/dashboard")
   }
 
   return (
@@ -168,9 +172,12 @@ function App() {
           <Route path="/pass_otp" element={<PassOtp />} />
           <Route path="/reset_pass" element={<ResetPassword />} />
 
-          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
-          <Route path="/stock" element={<ProtectedRoute element={<Stock email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
-          <Route path="/profile" element={<ProtectedRoute element={<Profile email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard onLogout={handleLogout} email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/stock" element={<ProtectedRoute element={<Stock onLogout={handleLogout} email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<Profile onLogout={handleLogout} email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+          <Route path="/invoice" element={<ProtectedRoute element={<Invoice onLogout={handleLogout} email={email} />} token={token} profile_completed={profileCompleted} user_status={userStatus} user_type={userType} />} />
+
+          <Route path="/admin_dashboard" element={<AdminRoute element={<AdminDashboard onLogout={handleLogout} />} token={token} user_status={userStatus} user_type={userType} />} />
         </Routes>
       </BrowserRouter>
     </>
