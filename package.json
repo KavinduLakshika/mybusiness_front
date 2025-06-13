@@ -25,6 +25,7 @@
     "bootswatch": "^5.3.3",
     "chart.js": "^4.4.2",
     "firebase": "^10.11.1",
+    "front": "file:",
     "lineicons": "^1.0.3",
     "lineicons-react": "^1.0.5",
     "md5": "^2.3.0",

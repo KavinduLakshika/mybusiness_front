@@ -102,7 +102,7 @@ function App() {
     if (storedProfile) {
       setProfileCompleted(storedProfile === 'true');
     }
-  }, []);
+  });
 
   const handleLogin = (name: string, email: string, token: string, user_status: string, user_type: string, profile_completed: boolean) => {
     localStorage.setItem('name', name);

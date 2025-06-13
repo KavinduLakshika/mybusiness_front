@@ -20,14 +20,11 @@ const UserPasswordUpdateTab = ({ email }: Props) => {
     const [obscure, setObscure] = useState(true);
     const obscureIcon = obscure ? faEye : faEyeSlash;
     const inputType = obscure ? "password" : "text";
-    const [passwordValidity, setPasswordValidity] = useState({
-        length: false,
-        capital: false,
-        simple: false,
-        number: false
-    });
+
 
     const handleObscure = () => setObscure(!obscure);
+
+    
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;

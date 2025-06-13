@@ -10,9 +10,11 @@ const ResetPassword = () => {
 
     const [obscure, setObscure] = useState(true);
     const [login, setLogin] = useState(false);
+    
     const obscureIcon = obscure ? faEye : faEyeSlash;
     const inputType = obscure ? "password" : "text";
     const handleObscure = () => setObscure(!obscure);
+
     const [formData, setFormData] = useState({ password: "", cpassword: "" });
     const [errors, setErrors] = useState({ password: "", cpassword: "" });
     const [processing, setProcessing] = useState(false);
