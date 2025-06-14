@@ -13,9 +13,6 @@ RUN npm install --include=dev
 # Install Vite globally to ensure it's available
 RUN npm install -g vite
 
-# Clear npm cache to avoid conflicts
-RUN npm cache clean --force
-
 # Copy source code
 COPY . .
 
