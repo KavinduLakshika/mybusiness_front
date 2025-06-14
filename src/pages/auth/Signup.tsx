@@ -187,7 +187,7 @@ const Signup: React.FC<SignupProps> = ({ onLogin }) => {
                             null
                         }
 
-                        <form   >
+                        <form onSubmit={handleSubmit}>
                             <div className="row mt-3">
                                 <div className="col-md-12">
                                     <label htmlFor="name">Name:</label>
