@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production=false
+# Install dependencies (including dev dependencies for Vite)
+RUN npm install
+
+# Install Vite globally to ensure it's available
+RUN npm install -g vite
 
 # Copy source code
 COPY . .
